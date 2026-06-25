@@ -1,0 +1,11 @@
+{
+	"id": "cloud-attachment",
+	"name": "Cloud Attachment",
+	"version": "1.0.0",
+	"minAppVersion": "1.11.4",
+	"description": "Upload attachments to S3",
+	"author": "Machell",
+	"authorUrl": "https://github.com/machellll/cloud-attachment",
+	"fundingUrl": "https://buymeacoffee.com/marchell",
+	"isDesktopOnly": true
+}

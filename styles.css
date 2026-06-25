@@ -1,0 +1,36 @@
+.cloud-attachment-progress-row,
+.cloud-attachment-log-row,
+.cloud-attachment-orphan-row,
+.cloud-attachment-dup-group {
+	margin-bottom: 0.5em;
+}
+
+.cloud-attachment-log-list {
+	max-height: 70vh;
+	overflow-y: auto;
+}
+
+.cloud-attachment-log-level-error {
+	color: var(--text-error);
+}
+
+.cloud-attachment-log-level-warn {
+	color: var(--text-warning);
+}
+
+.cloud-attachment-log-detail,
+.cloud-attachment-progress-detail {
+	font-size: 0.85em;
+	opacity: 0.8;
+}
+
+.cloud-attachment-storage table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.cloud-attachment-storage th,
+.cloud-attachment-storage td {
+	padding: 4px 8px;
+	text-align: left;
+}
