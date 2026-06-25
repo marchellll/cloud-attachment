@@ -30,9 +30,16 @@ export function registerReferenceScanScheduler(
 			const elapsed = Date.now() - new Date(last).getTime();
 			if (elapsed < interval) return;
 		}
-		void ctx.reference.scanAll();
+		void ctx.log.info('reference', 'Scheduled reference scan started');
+		void ctx.reference.scanAll().then((result) => {
+			void ctx.log.info(
+				'reference',
+				'Scheduled reference scan complete',
+				`${result.files} files scanned, ${result.orphans} orphans`,
+			);
+		});
 	};
 
 	plugin.registerInterval(window.setInterval(tick, MS_DAY));
-	tick();
+	window.setTimeout(tick, 0);
 }

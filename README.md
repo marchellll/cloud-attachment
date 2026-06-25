@@ -50,7 +50,7 @@ Guides:
 | Scan attachment references | Full vault reference reconciliation |
 | Find duplicate cloud files | Review duplicate content hashes |
 | Sync from bucket | Import bucket objects into local index |
-| Open activity log | Open log sidebar |
+| Open activity log | Open activity log in a main tab |
 
 ### Ribbon
 

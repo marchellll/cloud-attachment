@@ -19,7 +19,7 @@ export class QueueService {
 			attempts,
 			lastError: error,
 		});
-		await this.log.warn('queue', 'Upload queued', localPath);
+		await this.log.warn('queue', 'Queued for retry when online', `${localPath}: ${error}`);
 	}
 
 	async drain(): Promise<void> {
@@ -36,6 +36,7 @@ export class QueueService {
 			try {
 				await upload.uploadFiles([item.localPath]);
 				await this.index.dequeue(item.localPath);
+				await this.log.info('queue', 'Queue item uploaded', item.localPath);
 			} catch (e) {
 				await this.enqueue(
 					item.localPath,

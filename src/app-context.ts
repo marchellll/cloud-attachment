@@ -73,6 +73,7 @@ export class AppContext {
 
 	async init(): Promise<void> {
 		await this.dataRepo.load();
-		await this.log.info('system', 'Plugin loaded');
+		await this.secretRepo.load();
+		await this.log.debug('system', 'Plugin loaded');
 	}
 }

@@ -2,7 +2,6 @@ import type { Plugin, TAbstractFile } from 'obsidian';
 import { TFile } from 'obsidian';
 import type { AppContext } from '../../app-context';
 import { vaultInternalGuard } from '../../repository/vault-internal-guard';
-import { openProgressWindow } from '../../ui/progress-window';
 
 let debounceTimer: number | null = null;
 const pendingPaths = new Set<string>();
@@ -51,9 +50,11 @@ async function flush(plugin: Plugin, ctx: AppContext): Promise<void> {
 	const paths = [...pendingPaths];
 	pendingPaths.clear();
 	if (!paths.length || ctx.upload.isUploading()) return;
-	if (ctx.settingsRepo.get().showProgressWindow) {
-		openProgressWindow(ctx);
-	}
+	void ctx.log.info(
+		'upload',
+		'Auto-upload batch started',
+		`${paths.length} file(s): ${paths.join(', ')}`,
+	);
 	try {
 		await ctx.upload.uploadFiles(paths);
 	} catch (e) {

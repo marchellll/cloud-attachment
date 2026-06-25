@@ -2,9 +2,9 @@ import { Plugin } from 'obsidian';
 import { AppContext } from './app-context';
 import { registerCommands } from './commands';
 import { CloudAttachmentSettingTab } from './ui/settings-tab';
-import { ProgressView, PROGRESS_VIEW_TYPE } from './ui/progress-window';
 import { StorageView, STORAGE_VIEW_TYPE, activateStorageView } from './ui/storage-view';
-import { LogView, LOG_VIEW_TYPE } from './ui/log-view';
+import { LogView, LOG_VIEW_TYPE, closeSidebarLogLeaves } from './ui/log-view';
+import { registerUploadIndicator } from './ui/upload-indicator';
 import { registerAutoUpload } from './utils/events/auto-upload';
 import { registerQueueDrain } from './utils/events/queue-drain';
 import { registerReferenceDebounce } from './utils/events/reference-debounce';
@@ -17,7 +17,6 @@ export default class CloudAttachmentPlugin extends Plugin {
 		this.ctx = new AppContext(this.app, this);
 		await this.ctx.init();
 
-		this.registerView(PROGRESS_VIEW_TYPE, (leaf) => new ProgressView(leaf));
 		this.registerView(STORAGE_VIEW_TYPE, (leaf) => {
 			const view = new StorageView(leaf);
 			view.setContext(this.ctx);
@@ -28,6 +27,9 @@ export default class CloudAttachmentPlugin extends Plugin {
 			view.setContext(this.ctx);
 			return view;
 		});
+		closeSidebarLogLeaves(this.app);
+
+		registerUploadIndicator(this, this.ctx);
 
 		this.addRibbonIcon('upload-cloud', 'Cloud storage', () => {
 			void activateStorageView(this.app, this.ctx);
@@ -45,6 +47,6 @@ export default class CloudAttachmentPlugin extends Plugin {
 	}
 
 	onunload(): void {
-		void this.ctx.log.info('system', 'Plugin unloaded');
+		void this.ctx.log.debug('system', 'Plugin unloaded');
 	}
 }

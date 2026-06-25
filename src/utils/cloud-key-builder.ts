@@ -5,7 +5,9 @@ export function buildCloudKey(
 	enabled: boolean,
 	now = new Date(),
 ): string {
-	const sanitized = originalName.replace(/[/\\]/g, '_');
+	const sanitized = originalName
+		.replace(/[/\\]/g, '_')
+		.replace(/\s+/g, '_');
 	if (!enabled) {
 		return sanitized;
 	}
@@ -18,5 +20,6 @@ export function buildCloudKey(
 export function buildPublicUrl(baseUrl: string, cloudKey: string): string {
 	const base = baseUrl.replace(/\/+$/, '');
 	const key = cloudKey.replace(/^\/+/, '');
-	return `${base}/${key}`;
+	const encoded = key.split('/').map(encodeURIComponent).join('/');
+	return `${base}/${encoded}`;
 }

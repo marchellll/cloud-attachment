@@ -1,3 +1,41 @@
+.cloud-attachment-upload-indicator {
+	position: fixed;
+	right: 16px;
+	bottom: 16px;
+	z-index: 100;
+	min-width: 180px;
+	max-width: 280px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	font-size: 0.85em;
+	pointer-events: none;
+}
+
+.cloud-attachment-upload-indicator-title {
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.cloud-attachment-upload-indicator-file {
+	opacity: 0.85;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-bottom: 6px;
+}
+
+.cloud-attachment-upload-indicator-summary {
+	opacity: 0.85;
+}
+
+.cloud-attachment-upload-indicator-bar {
+	width: 100%;
+	height: 4px;
+}
+
 .cloud-attachment-progress-row,
 .cloud-attachment-log-row,
 .cloud-attachment-orphan-row,
@@ -5,23 +43,90 @@
 	margin-bottom: 0.5em;
 }
 
-.cloud-attachment-log-list {
-	max-height: 70vh;
-	overflow-y: auto;
+.cloud-attachment-log {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	user-select: text;
+	-webkit-user-select: text;
 }
 
-.cloud-attachment-log-level-error {
+.cloud-attachment-log-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 16px;
+	padding: 10px 14px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+}
+
+.cloud-attachment-log-filter {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.cloud-attachment-log-filter-label {
+	font-size: 0.85em;
+	opacity: 0.75;
+}
+
+.cloud-attachment-log-toolbar select,
+.cloud-attachment-log-toolbar input[type='search'] {
+	padding: 4px 10px;
+	min-height: 28px;
+}
+
+.cloud-attachment-log-clear {
+	padding: 4px 12px;
+	min-height: 28px;
+	margin-left: auto;
+}
+
+.cloud-attachment-log-list {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	padding: 8px 12px;
+	user-select: text;
+	-webkit-user-select: text;
+	font-family: var(--font-monospace);
+	font-size: 0.85em;
+	background: var(--background-primary);
+}
+
+.cloud-attachment-log-row {
+	user-select: text;
+	-webkit-user-select: text;
+	cursor: text;
+	margin: 0;
+	padding: 1px 0;
+}
+
+.cloud-attachment-log-line {
+	margin: 0;
+	padding: 0;
+	white-space: pre-wrap;
+	word-break: break-word;
+	user-select: text;
+	-webkit-user-select: text;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: 1.45;
+}
+
+.cloud-attachment-log-level-error .cloud-attachment-log-line {
 	color: var(--text-error);
 }
 
-.cloud-attachment-log-level-warn {
+.cloud-attachment-log-level-warn .cloud-attachment-log-line {
 	color: var(--text-warning);
 }
 
-.cloud-attachment-log-detail,
-.cloud-attachment-progress-detail {
-	font-size: 0.85em;
-	opacity: 0.8;
+.cloud-attachment-log-empty {
+	opacity: 0.7;
+	padding: 12px;
 }
 
 .cloud-attachment-storage table {
@@ -33,4 +138,8 @@
 .cloud-attachment-storage td {
 	padding: 4px 8px;
 	text-align: left;
+}
+
+.cloud-attachment-required-error {
+	color: var(--text-error);
 }

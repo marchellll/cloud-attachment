@@ -18,7 +18,6 @@ export interface CloudAttachmentSettings {
 	cloudRenameEnabled: boolean;
 	postUploadLocalAction: PostUploadLocalAction;
 	postUploadMoveFolder: string;
-	showProgressWindow: boolean;
 	batchConcurrency: number;
 	referenceTrackingEnabled: boolean;
 	referenceScanSchedule: ReferenceScanSchedule;
@@ -44,8 +43,7 @@ export const DEFAULT_SETTINGS: CloudAttachmentSettings = {
 	stopUsageBytes: 9000 * 1024 * 1024,
 	cloudRenameEnabled: true,
 	postUploadLocalAction: 'keep',
-	postUploadMoveFolder: '',
-	showProgressWindow: true,
+	postUploadMoveFolder: '.trash',
 	batchConcurrency: 3,
 	referenceTrackingEnabled: false,
 	referenceScanSchedule: 'weekly',

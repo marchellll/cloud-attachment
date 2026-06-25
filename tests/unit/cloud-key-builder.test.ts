@@ -13,12 +13,29 @@ describe('buildCloudKey', () => {
 		expect(key).toMatch(/^2026\/06\/24\/.+-img\.png$/);
 		vi.useRealTimers();
 	});
+
+	it('replaces spaces in basename', () => {
+		expect(buildCloudKey('Screenshot 2026.png', true)).toMatch(
+			/Screenshot_2026\.png$/,
+		);
+	});
 });
 
 describe('buildPublicUrl', () => {
 	it('joins base and key', () => {
 		expect(buildPublicUrl('https://cdn.example.com/', 'a/b.png')).toBe(
 			'https://cdn.example.com/a/b.png',
+		);
+	});
+
+	it('percent-encodes spaces in key segments', () => {
+		expect(
+			buildPublicUrl(
+				'http://127.0.0.1:9000/cloud-attachment-test',
+				'2026/06/25/uuid-Screenshot 2026.png',
+			),
+		).toBe(
+			'http://127.0.0.1:9000/cloud-attachment-test/2026/06/25/uuid-Screenshot%202026.png',
 		);
 	});
 });

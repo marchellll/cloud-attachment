@@ -1,5 +1,9 @@
 import type { Plugin } from 'obsidian';
-import type { CloudAttachmentSettings } from '../settings';
+import type {
+	CloudAttachmentSettings,
+	PostUploadLocalAction,
+	ReferenceScanSchedule,
+} from '../settings';
 import { DEFAULT_SETTINGS } from '../settings';
 import type {
 	DuplicateGroup,
@@ -28,6 +32,34 @@ function migrate(data: Partial<PluginData>): PluginData {
 		merged.dataVersion = PLUGIN_DATA_VERSION;
 	}
 	recomputeTotalBytes(merged);
+	return merged;
+}
+
+const POST_UPLOAD_ACTIONS = new Set<PostUploadLocalAction>([
+	'keep',
+	'move-trash',
+	'move-folder',
+	'delete',
+]);
+const REFERENCE_SCHEDULES = new Set<ReferenceScanSchedule>([
+	'daily',
+	'weekly',
+	'monthly',
+]);
+
+function sanitizeSettings(
+	raw: Partial<CloudAttachmentSettings> | undefined,
+): CloudAttachmentSettings {
+	const merged = { ...DEFAULT_SETTINGS, ...raw };
+	if (!Array.isArray(merged.watchFolders)) {
+		merged.watchFolders = DEFAULT_SETTINGS.watchFolders;
+	}
+	if (!POST_UPLOAD_ACTIONS.has(merged.postUploadLocalAction)) {
+		merged.postUploadLocalAction = DEFAULT_SETTINGS.postUploadLocalAction;
+	}
+	if (!REFERENCE_SCHEDULES.has(merged.referenceScanSchedule)) {
+		merged.referenceScanSchedule = DEFAULT_SETTINGS.referenceScanSchedule;
+	}
 	return merged;
 }
 
@@ -62,7 +94,7 @@ export class PluginDataRepo implements IUploadIndexRepo {
 		const raw = (await this.plugin.loadData()) as Partial<PluginData> & {
 			settings?: Partial<CloudAttachmentSettings>;
 		} | null;
-		this.settings = { ...DEFAULT_SETTINGS, ...raw?.settings };
+		this.settings = sanitizeSettings(raw?.settings);
 		this.data = migrate(raw ?? {});
 	}
 

@@ -15,8 +15,8 @@ export class LinkService {
 			const paths = await this.vault.rewriteNoteLinks(localPath, publicUrl);
 			await this.log.info(
 				'upload',
-				'Links updated',
-				`${paths.length} file(s) for ${localPath}`,
+				'Replaced attachment links with public URL',
+				`${paths.length} note(s) for ${localPath} → ${publicUrl}`,
 			);
 			return paths;
 		} catch (e) {

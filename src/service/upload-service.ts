@@ -12,7 +12,7 @@ import type {
 import { buildCloudKey, buildPublicUrl } from '../utils/cloud-key-builder';
 import { sha256Hex } from '../utils/content-hash';
 import { isGitignored } from '../utils/gitignore-filter';
-import { contentTypeFromPath } from '../utils/mime';
+import { ensureFileExtension, resolveContentType } from '../utils/mime';
 import { shouldUploadFile } from '../utils/upload-filter';
 import type { LinkService } from './link-service';
 import type { LogService } from './log-service';
@@ -116,7 +116,7 @@ export class UploadService {
 			);
 			if (!filter.allowed) {
 				update({ status: 'skipped', message: filter.reason });
-				await this.log.info('upload', 'Skipped', `${path}: ${filter.reason}`);
+				await this.log.info('upload', 'Skipped upload', `${path}: ${filter.reason}`);
 				return;
 			}
 
@@ -132,17 +132,23 @@ export class UploadService {
 				const rewritten = await this.links.rewriteLinks(path, existing.publicUrl);
 				this.reference.trackTouchedNote(rewritten);
 				update({ status: 'skipped', message: 'Duplicate — linked to existing' });
-				await this.log.info('upload', 'Dedup skip', path);
+				await this.log.info(
+					'upload',
+					'Duplicate content — linked to existing URL',
+					`${path} → ${existing.publicUrl}`,
+				);
 				return;
 			}
 
 			update({ status: 'uploading', percent: 0 });
-			const cloudKey = buildCloudKey(
+			await this.log.info('upload', 'Uploading file', path);
+			const contentType = resolveContentType(path, buf);
+			const uploadName = ensureFileExtension(
 				path.split('/').pop() ?? path,
-				s.cloudRenameEnabled,
+				contentType,
 			);
+			const cloudKey = buildCloudKey(uploadName, s.cloudRenameEnabled);
 			const publicUrl = buildPublicUrl(s.publicBaseUrl, cloudKey);
-			const contentType = contentTypeFromPath(path);
 
 			await this.cloud.putObject(cloudKey, buf, contentType, (pct) => {
 				update({ percent: pct });
@@ -168,6 +174,11 @@ export class UploadService {
 				record.linkStatus = 'pending';
 				await this.index.saveUpload(record);
 				update({ status: 'error', message: 'Link rewrite failed' });
+				await this.log.error(
+					'upload',
+					'Uploaded but link rewrite failed',
+					path,
+				);
 				new Notice(
 					'Uploaded but link rewrite failed — check activity log',
 				);
@@ -178,7 +189,11 @@ export class UploadService {
 			this.reference.trackTouchedNote(rewritten);
 			await this.applyPostUpload(path);
 			update({ status: 'done' });
-			await this.log.info('upload', 'Upload complete', path);
+			await this.log.info(
+				'upload',
+				'Upload complete',
+				`${path} → ${publicUrl}`,
+			);
 		} catch (e) {
 			const msg = e instanceof Error ? e.message : String(e);
 			update({ status: 'error', message: msg });

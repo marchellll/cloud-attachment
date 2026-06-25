@@ -1,19 +1,23 @@
 import { Notice, type Plugin } from 'obsidian';
 import type { AppContext } from '../app-context';
 import { extractLocalAttachmentPaths } from '../utils/local-attachment-extractor';
-import { openProgressWindow } from '../ui/progress-window';
+import { logCommand } from '../utils/log-command';
 
-async function runUpload(ctx: AppContext, paths: string[]): Promise<void> {
+async function runUpload(
+	ctx: AppContext,
+	paths: string[],
+	commandName: string,
+): Promise<void> {
 	if (!paths.length) {
 		new Notice('No files to upload');
 		return;
 	}
-	if (ctx.settingsRepo.get().showProgressWindow) {
-		openProgressWindow(ctx);
-	}
-	ctx.upload.setProgressCallback(() => {
-		// progress view polls via callback registration in openProgressWindow
-	});
+	logCommand(ctx, commandName);
+	void ctx.log.info(
+		'upload',
+		'Upload batch started',
+		`${paths.length} file(s): ${paths.join(', ')}`,
+	);
 	try {
 		await ctx.upload.uploadFiles(paths);
 	} catch (e) {
@@ -40,7 +44,11 @@ export function registerUploadCommands(plugin: Plugin, ctx: AppContext): void {
 			const extra = ctx.settingsRepo.get().watchFolders.flatMap((f) =>
 				ctx.vaultRepo.listFilesInFolder(f),
 			);
-			await runUpload(ctx, [...new Set([...paths, ...extra])]);
+			await runUpload(
+				ctx,
+				[...new Set([...paths, ...extra])],
+				'Upload attachments from the asset folder',
+			);
 		},
 	});
 
@@ -55,7 +63,7 @@ export function registerUploadCommands(plugin: Plugin, ctx: AppContext): void {
 				const paths = folder
 					? ctx.vaultRepo.listFilesInFolder(folder)
 					: [];
-				void runUpload(ctx, paths);
+				void runUpload(ctx, paths, 'Upload attachments from this folder');
 			}
 			return true;
 		},
@@ -75,7 +83,11 @@ export function registerUploadCommands(plugin: Plugin, ctx: AppContext): void {
 						file.path,
 						content,
 					).filter((p) => plugin.app.vault.getAbstractFileByPath(p));
-					await runUpload(ctx, paths);
+					await runUpload(
+						ctx,
+						paths,
+						'Upload attachments in current file',
+					);
 				})();
 			}
 			return true;
